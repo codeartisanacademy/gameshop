@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb " All " "products-all" %}
+{% endblock %}
+{% block page_content %}
+{% render_breadcrumbs %}
+
+{% if object_list %}
+<div class="row">
+    
+        {% for obj in  object_list %}
+        <div class="col-4">
+            <div class="card">
+                <img src="/media/{{obj.main_image.image}}" class="p-2 card-img-top" alt="">
+                <div class="card-body">
+                    <h4 class="card-title"><a href="{% url 'product-detail' obj.id %}">{{obj.name}}</a></h4>
+                    <p class="card-text">
+                        {{obj.description|truncatewords:20}}
+                    </p>
+                    <p>
+                        IDR. {{obj.price|intcomma}}
+                    </p>
+                    
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+</div>
+{% else %}
+<div class="row">
+    <div class="col">
+        <p>You don't have any products yet.</p>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+    
+    
