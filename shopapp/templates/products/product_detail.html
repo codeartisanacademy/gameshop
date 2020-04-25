@@ -15,13 +15,18 @@
         <img src="/media/{{object.main_image.image}}" class="img-fluid" alt="">
     </div>
     <div class="col-6">
+        <p>Last visit: {{last_visit}}</p>
+        <p>In your cart: {{cart}}</p>
         <h4>{{object.name}}</h4>
-        {{session_time}}
+        
         <p class="card-text">
             {{object.description}}
         </p>
         <p>
             {{object.price|intcomma}}
+        </p>
+        <p>
+            <a href="{% url 'cart-added' object.id %}" class="btn btn-primary">Buy</a>     
         </p>
     </div>
 </div>

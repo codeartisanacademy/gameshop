@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from shopapp.views import ProductsView, ProductDetailView
+from shopapp.views import ProductsView, ProductDetailView, AddedToCartView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/all/', ProductsView.as_view(), name='products-all'),
     path('products/<int:pk>', ProductDetailView.as_view(), name='product-detail' ),
+    path('cart/added/<int:id>', AddedToCartView.as_view(), name='cart-added'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
