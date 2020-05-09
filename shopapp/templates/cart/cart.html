@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+    {{ block.super }}
+    {% breadcrumb " All" "products-all" %}
+    {% breadcrumb object "product-detail" object.name  %}
+{% endblock %}
+
+{% block page_content %}
+{% render_breadcrumbs %}
+
+<h2>Your Shopping Cart</h2>
+<div class="row my-4">
+    <div class="col-6">
+        
+        {% for product in products_in_cart  %}
+            <div>
+                <h4>{{product.name}}</h4>
+                <p>{{product.price}}</p>
+            </div>
+        {% endfor %}
+            
+    </div>
+
+    <div class="col-6 text-right">
+        <a href="#" class="btn btn-primary">Check Out</a>
+    </div>
+</div>
+
+{% endblock %}
