@@ -24,7 +24,8 @@ class ProductDetailView(DetailView):
         # your extra context
         context["related_products"] = Product.objects.filter(name__contains='playstation')
         context["last_visit"] = self.request.session['session_last_visit']
-        context["cart"] = self.request.session['cart']
+        if 'cart' in self.request.session:
+            context["cart"] = len(self.request.session['cart'])
         return context
     
     def post(self, request):
@@ -36,22 +37,16 @@ class AddedToCartView(TemplateView):
     id = None
 
     def get(self, request, id):
-        request.session['cart'] = id
-        return render(request, self.template_name, {'product':request.session['cart']})
+        cart_products = None
+        if "cart" in request.session:
+            cart_products = request.session['cart']
+            cart_products.append({'id': id, 'quantity': 1})
+            request.session['cart'] = cart_products
+        else:
+            request.session['cart'] = []
+            cart_products = request.session['cart']
+            
+        return render(request, self.template_name, {'product':len(cart_products)})
 
 
 
-
-
-
-
-
-# Create your views here.
-"""class ProductsView(ListView):
-    model = Product
-    template_name = 'products/product_list.html'
-
-
-class ProductDetail(DetailView):
-    model = Product
-    template_name = ''"""
