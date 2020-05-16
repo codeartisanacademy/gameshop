@@ -16,12 +16,21 @@
 <div class="row my-4">
     <div class="col-6">
         
-        {% for product in products_in_cart  %}
-            <div>
-                <h4>{{product.name}}</h4>
-                <p>{{product.price}}</p>
-            </div>
-        {% endfor %}
+        {% if products_in_cart %}
+            {% for product in products_in_cart  %}
+                <div class="mb-4 py-4 border-bottom">
+                    <h4>{{product.name}}</h4>
+                    <p>{{product.price}}</p>
+                    <a href="{% url 'cart-remove' forloop.counter0 %}" class="btn btn-secondary">Remove</a>
+                    
+                </div>
+
+            {% endfor %}
+        {% else %}
+                <p>You don't have anything in your cart.</p>
+        {% endif %}
+            
+        
             
     </div>
 

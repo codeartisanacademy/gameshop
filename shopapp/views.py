@@ -5,7 +5,10 @@ import datetime
 from .models import Product, ProductImage
 
 def count_total_items(request):
-    return len(request.session['cart'])
+    total_items = 0
+    if 'cart' in request.session:
+        total_items = len(request.session['cart'])
+    return total_items
 
 class ProductsView(ListView):
     # this is a must in ListView, it tells what model you want to use
@@ -33,9 +36,8 @@ class ProductDetailView(DetailView):
         # your extra context
         context["related_products"] = Product.objects.filter(name__contains='playstation')
         context["last_visit"] = self.request.session['session_last_visit']
-        if 'cart' in self.request.session:
-            context["cart"] =count_total_items(self.request)
-            print(self.request.session['cart'])
+        context["cart"] = count_total_items(self.request)
+
         return context
     
     def post(self, request):
@@ -58,18 +60,37 @@ class AddedToCartView(TemplateView):
             request.session['cart'] = []
             cart_products = request.session['cart']
             
-        return render(request, self.template_name, {'product':len(cart_products)})
+        return render(request, self.template_name, {'product':len(cart_products), 'cart':count_total_items(request)})
 
 
 class ShoppingCartView(TemplateView):
     template_name = 'cart/cart.html'
 
     def get(self, request):
+        
         products = []
         if 'cart' in request.session:
+            print(request.session['cart'])
             items_in_cart = request.session['cart']
             for item in items_in_cart:
                 products.append(Product.objects.get(id=item['id']))
+        
+        return render(request, self.template_name, {'products_in_cart':products, 'cart':count_total_items(request)})       
 
-        return render(request, self.template_name, {'products_in_cart':products})       
 
+class RemoveProductFromCartView(TemplateView):
+    template_name = 'cart/remove.html'
+    id = None
+
+    def get(self, request, id):
+        # get the list from the session store it in a local variable
+        products_in_cart = []
+        products_in_cart = request.session['cart']
+
+        # remove the disctionary from the list
+        del products_in_cart[id]
+
+        # reassign the session cart with the new list
+        request.session['cart'] = products_in_cart
+
+        return render(request, self.template_name, {'cart': count_total_items(request)})
