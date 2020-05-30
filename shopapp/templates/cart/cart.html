@@ -12,10 +12,22 @@
 {% block page_content %}
 {% render_breadcrumbs %}
 
-<h2>Your Shopping Cart</h2>
+{% if messages %}
+        <div class="row">
+            <div class="col-6">
+                
+                {% for msg in messages  %}
+                    <div class="alert {{msg.tags}}">{{msg}}</div>
+                {% endfor %}
+
+            </div>
+        </div>
+{% endif %}
+
 <div class="row my-4">
     <div class="col-6">
         
+        <h2>Your Shopping Cart</h2>
         {% if products_in_cart %}
             {% for product in products_in_cart  %}
                 <div class="mb-4 py-4 border-bottom">

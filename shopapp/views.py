@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, DetailView
+from django.shortcuts import HttpResponseRedirect, reverse
+from django.contrib import messages
+
 import datetime
 
 from .models import Product, ProductImage
@@ -50,17 +53,24 @@ class AddedToCartView(TemplateView):
 
     def get(self, request, id):
         cart_products = None
-        if "cart" in request.session:
-            cart_products = request.session['cart']
-            # [{'id':1, 'quantity':2}, {'id':3, 'quantity':5}]
-            cart_products.append({'id':id, 'quantity':1})
+        try:
+            if "cart" in request.session:
+                cart_products = request.session['cart']
+                # [{'id':1, 'quantity':2}, {'id':3, 'quantity':5}]
+                cart_products.append({'id':id, 'quantity':1})
+                request.session['cart'] = cart_products
+            else:
+                cart_products = []
+                cart_products.append({'id':id, 'quantity':1})
+                request.session['cart'] = cart_products
             
-            request.session['cart'] = cart_products
-        else:
-            request.session['cart'] = []
-            cart_products = request.session['cart']
-            
-        return render(request, self.template_name, {'product':len(cart_products), 'cart':count_total_items(request)})
+            messages.success(request, "Product successfully added to cart")
+            return HttpResponseRedirect(reverse('cart'))
+
+        except Exception as error:
+            messages.error(request, error )
+            return HttpResponseRedirect(reverse('products-detail', kwargs={'pk':id}))
+        
 
 
 class ShoppingCartView(TemplateView):
@@ -94,3 +104,11 @@ class RemoveProductFromCartView(TemplateView):
         request.session['cart'] = products_in_cart
 
         return render(request, self.template_name, {'cart': count_total_items(request)})
+
+
+
+class CheckoutView(TemplateView):
+    template_name="cart/checkout.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
